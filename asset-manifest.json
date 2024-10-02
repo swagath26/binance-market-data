@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/binance-market-data-websocket/static/css/main.12e314b8.css",
+    "main.js": "/binance-market-data-websocket/static/js/main.d17da3ee.js",
+    "static/js/453.10722d7c.chunk.js": "/binance-market-data-websocket/static/js/453.10722d7c.chunk.js",
+    "index.html": "/binance-market-data-websocket/index.html",
+    "main.12e314b8.css.map": "/binance-market-data-websocket/static/css/main.12e314b8.css.map",
+    "main.d17da3ee.js.map": "/binance-market-data-websocket/static/js/main.d17da3ee.js.map",
+    "453.10722d7c.chunk.js.map": "/binance-market-data-websocket/static/js/453.10722d7c.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.12e314b8.css",
+    "static/js/main.d17da3ee.js"
+  ]
+}
