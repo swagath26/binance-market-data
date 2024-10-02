@@ -1,16 +1,16 @@
-import React from 'react';
+import { coins, intervals } from '../config/config';
 
 const Dropdown = ({ selectedCoin, setSelectedCoin, selectedInterval, setSelectedInterval }) => {
   return (
-    <div className="flex justify-center mb-4">
+    <div className="inline-flex flex-wrap justify-center gap-6">
       <select
-        className="mr-2 p-2 border rounded"
+        className="p-2 border rounded"
         value={selectedCoin}
         onChange={(e) => setSelectedCoin(e.target.value)}
       >
-        <option value="ethusdt">ETH/USDT</option>
-        <option value="bnbusdt">BNB/USDT</option>
-        <option value="dotusdt">DOT/USDT</option>
+        {coins.map((coin) => (
+          <option key={coin.symbol} value={coin.symbol}>{coin.label}</option>
+        ))}
       </select>
 
       <select
@@ -18,9 +18,9 @@ const Dropdown = ({ selectedCoin, setSelectedCoin, selectedInterval, setSelected
         value={selectedInterval}
         onChange={(e) => setSelectedInterval(e.target.value)}
       >
-        <option value="1m">1 Minute</option>
-        <option value="3m">3 Minutes</option>
-        <option value="5m">5 Minutes</option>
+        {intervals.map((interval) => (
+          <option key={interval.value} value={interval.value}>{interval.label}</option>
+        ))}
       </select>
     </div>
   );

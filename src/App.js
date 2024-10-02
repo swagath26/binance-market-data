@@ -1,90 +1,76 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Chart from './components/Chart';
 import Dropdown from './components/Dropdown';
+import { connectToWebSocket } from './utils/webSocketConnection';
+import { getStoredData, saveToLocalStorage } from './utils/storageUtil';
+import { coins, intervals } from './config/config';
 
 const App = () => {
-  const [selectedCoin, setSelectedCoin] = useState('ethusdt');
-  const [selectedInterval, setSelectedInterval] = useState('1m');
+  const [selectedCoin, setSelectedCoin] = useState(coins[0].symbol);
+  const [selectedInterval, setSelectedInterval] = useState(intervals[0].value);
   const [candlestickData, setCandlestickData] = useState([]);
 
   const wsRef = useRef(null);
 
-  const coinData = useRef({
-    ethusdt: [],
-    bnbusdt: [],
-    dotusdt: [],
-  });
+  // Initialize the coinData for each coins with empty arrays
+  const coinData = useRef(
+    coins.reduce((acc, coin) => {
+      acc[coin.symbol] = [];
+      return acc;
+    }, {})
+  );
 
+  // Function to reset the current graph
+  const resetCurrentGraph = () => {
+    coinData.current[selectedCoin] = [];
+    setCandlestickData([]);
+    localStorage.setItem(selectedCoin, JSON.stringify([]));
+  };
+
+  // Load previously stored data for the selected coin
   useEffect(() => {
-    const storedData = localStorage.getItem(selectedCoin);
-    if (storedData) {
-      coinData.current[selectedCoin] = JSON.parse(storedData);
-      setCandlestickData(coinData.current[selectedCoin]);
-    }
+    coinData.current[selectedCoin] = getStoredData(selectedCoin);
+    setCandlestickData(coinData.current[selectedCoin]);
   }, [selectedCoin]);
 
+  // Save candlestick data to local storage when it updates
+  useEffect(() => {
+    saveToLocalStorage(selectedCoin, coinData.current[selectedCoin]);
+  }, [candlestickData]);
+
+  // Disconnect and Reconnect WebSocket connection with selction change in coin and interval
   useEffect(() => {
     const symbol = selectedCoin;
     const interval = selectedInterval;
 
-    const connectToWebSocket = () => {
-      const url = `wss://stream.binance.com:9443/ws/${symbol}@kline_${interval}`;
-      wsRef.current = new WebSocket(url);
-      if(wsRef.current) console.log('WebSocket Connected.')
-
-      wsRef.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.k) {
-          const candle = {
-            time: data.k.t,
-            open: data.k.o,
-            high: data.k.h,
-            low: data.k.l,
-            close: data.k.c,
-          };
-          coinData.current[symbol] = [
-            ...coinData.current[symbol].slice(-2000),
-            candle,
-          ];
-          setCandlestickData(coinData.current[symbol]);
-        }
-      };
-
-      wsRef.current.onclose = () => {
-        console.log('WebSocket closed. Reconnecting...');
-      };
-    };
-
-    if (wsRef.current) {
-      wsRef.current.close();
-    }
-    connectToWebSocket();
+    wsRef.current = connectToWebSocket(symbol, interval, coinData, setCandlestickData);
 
     return () => {
       if (wsRef.current) {
         wsRef.current.close();
+        console.log('WebSocket closing...');
       }
     };
   }, [selectedCoin, selectedInterval]);
-  
-
-
-  useEffect(() => {
-    localStorage.setItem(selectedCoin, JSON.stringify(coinData.current[selectedCoin]));
-  }, [candlestickData]);
-  
 
   return (
-    <div className="h-screen w-full mx-auto p-4 flex flex-col">
-      <div className='grow min-h-[10vh] max-h-[30vh]'>
+    <div className="h-screen w-full p-4 flex flex-col">
+      <div className='flex flex-wrap justify-center gap-8 gap-y-6 py-6 items-center min-h-fit max-h-[20vh]'>
+        
+        <button
+          onClick={resetCurrentGraph}
+          className="px-4 py-2 rounded border border-solid border-neutral-200 active:bg-neutral-100 hover:bg-blue-100 text-nowrap"
+        >Reset Current Graph</button>
+        
         <Dropdown
           selectedCoin={selectedCoin}
           setSelectedCoin={setSelectedCoin}
           selectedInterval={selectedInterval}
           setSelectedInterval={setSelectedInterval}
         />
+        
       </div>
-      <div className='flex justify-center items-center w-auto max-w-full h-fit max-h-[80vh]'>
+      <div className='flex p-4 grow justify-center items-center w-full h-fit min-h-72 min-w-64 max-w-full max-h-[80vh]'>
         <Chart candlestickData={candlestickData} />
       </div>
     </div>

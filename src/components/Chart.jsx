@@ -1,4 +1,3 @@
-import React from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, TimeScale, Tooltip, Title, Legend } from 'chart.js';
 import { CandlestickController, CandlestickElement } from 'chartjs-chart-financial';
 import 'chartjs-adapter-date-fns';
@@ -26,6 +25,7 @@ const ChartComponent = ({ candlestickData }) => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio : false,
     scales: {
       x: {
         type: 'time',
@@ -34,6 +34,10 @@ const ChartComponent = ({ candlestickData }) => {
         },
       },
       y: {
+        title: {
+          display: true,
+          text: 'Price (USD)'
+        },
         beginAtZero: false,
       },
     },
