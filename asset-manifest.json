@@ -1,15 +1,13 @@
 {
   "files": {
-    "main.css": "/binance-market-data/static/css/main.ada5c47c.css",
-    "main.js": "/binance-market-data/static/js/main.39ecdfc8.js",
-    "static/js/453.10722d7c.chunk.js": "/binance-market-data/static/js/453.10722d7c.chunk.js",
+    "main.css": "/binance-market-data/static/css/main.85ff432b.css",
+    "main.js": "/binance-market-data/static/js/main.30d03e7b.js",
     "index.html": "/binance-market-data/index.html",
-    "main.ada5c47c.css.map": "/binance-market-data/static/css/main.ada5c47c.css.map",
-    "main.39ecdfc8.js.map": "/binance-market-data/static/js/main.39ecdfc8.js.map",
-    "453.10722d7c.chunk.js.map": "/binance-market-data/static/js/453.10722d7c.chunk.js.map"
+    "main.85ff432b.css.map": "/binance-market-data/static/css/main.85ff432b.css.map",
+    "main.30d03e7b.js.map": "/binance-market-data/static/js/main.30d03e7b.js.map"
   },
   "entrypoints": [
-    "static/css/main.ada5c47c.css",
-    "static/js/main.39ecdfc8.js"
+    "static/css/main.85ff432b.css",
+    "static/js/main.30d03e7b.js"
   ]
 }
