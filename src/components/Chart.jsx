@@ -4,7 +4,6 @@ import { CandlestickController, CandlestickElement } from 'chartjs-chart-financi
 import 'chartjs-adapter-date-fns';
 import { Chart } from 'react-chartjs-2';
 
-// Register necessary components for candlestick chart
 ChartJS.register(CategoryScale, LinearScale, TimeScale, Tooltip, Title, Legend, CandlestickController, CandlestickElement);
 
 const ChartComponent = ({ candlestickData }) => {
@@ -13,7 +12,7 @@ const ChartComponent = ({ candlestickData }) => {
       {
         label: 'Candlestick Data',
         data: candlestickData.map(candle => ({
-          x: candle.time, // Time goes on x-axis
+          x: candle.time,
           o: candle.open,
           h: candle.high,
           l: candle.low,

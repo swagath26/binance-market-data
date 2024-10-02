@@ -6,15 +6,9 @@ const App = () => {
   const [selectedCoin, setSelectedCoin] = useState('ethusdt');
   const [selectedInterval, setSelectedInterval] = useState('1m');
   const [candlestickData, setCandlestickData] = useState([]);
-  const [selectedSymbol, setSelectedSymbol] = useState('ethusdt'); // Set a default symbol (e.g., ETH/USDT)
-
-  const handleSymbolChange = (event) => {
-    setSelectedSymbol(event.target.value); // Update symbol based on user input
-  };  
 
   const wsRef = useRef(null);
 
-  // Persist data in-memory and restore it when switching coins
   const coinData = useRef({
     ethusdt: [],
     bnbusdt: [],
@@ -22,17 +16,24 @@ const App = () => {
   });
 
   useEffect(() => {
-    setSelectedSymbol(selectedCoin);
+    const storedData = localStorage.getItem(selectedCoin);
+    if (storedData) {
+      coinData.current[selectedCoin] = JSON.parse(storedData);
+      setCandlestickData(coinData.current[selectedCoin]);
+    }
+  }, [selectedCoin]);
+
+  useEffect(() => {
+    const symbol = selectedCoin;
     const interval = selectedInterval;
 
-    // WebSocket Connection
     const connectToWebSocket = () => {
-      const url = `wss://stream.binance.com:9443/ws/${selectedSymbol}@kline_${interval}`;
+      const url = `wss://stream.binance.com:9443/ws/${symbol}@kline_${interval}`;
       wsRef.current = new WebSocket(url);
+      if(wsRef.current) console.log('WebSocket Connected.')
 
       wsRef.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
-
         if (data.k) {
           const candle = {
             time: data.k.t,
@@ -41,18 +42,16 @@ const App = () => {
             low: data.k.l,
             close: data.k.c,
           };
-
-          coinData.current[selectedSymbol] = [
-            ...coinData.current[selectedSymbol].slice(-100), // Limit data to the last 100 candles
+          coinData.current[symbol] = [
+            ...coinData.current[symbol].slice(-2000),
             candle,
           ];
-          setCandlestickData(coinData.current[selectedSymbol]);
+          setCandlestickData(coinData.current[symbol]);
         }
       };
 
       wsRef.current.onclose = () => {
         console.log('WebSocket closed. Reconnecting...');
-        connectToWebSocket();
       };
     };
 
@@ -61,36 +60,33 @@ const App = () => {
     }
     connectToWebSocket();
 
-    // Cleanup on component unmount
     return () => {
       if (wsRef.current) {
         wsRef.current.close();
       }
     };
   }, [selectedCoin, selectedInterval]);
-
-  useEffect(() => {
-    const storedData = localStorage.getItem(selectedSymbol);
-    if (storedData) {
-      coinData.current[selectedSymbol] = JSON.parse(storedData);
-      setCandlestickData(coinData.current[selectedSymbol]);
-    }
-  }, [selectedCoin]);
   
+
+
   useEffect(() => {
     localStorage.setItem(selectedCoin, JSON.stringify(coinData.current[selectedCoin]));
   }, [candlestickData]);
   
 
   return (
-    <div className="container mx-auto p-4">
-      <Dropdown
-        selectedCoin={selectedCoin}
-        setSelectedCoin={setSelectedCoin}
-        selectedInterval={selectedInterval}
-        setSelectedInterval={setSelectedInterval}
-      />
-      <Chart candlestickData={candlestickData} />
+    <div className="h-screen w-full mx-auto p-4 flex flex-col">
+      <div className='grow min-h-[10vh] max-h-[30vh]'>
+        <Dropdown
+          selectedCoin={selectedCoin}
+          setSelectedCoin={setSelectedCoin}
+          selectedInterval={selectedInterval}
+          setSelectedInterval={setSelectedInterval}
+        />
+      </div>
+      <div className='flex justify-center items-center w-auto max-w-full h-fit max-h-[80vh]'>
+        <Chart candlestickData={candlestickData} />
+      </div>
     </div>
   );
 };
