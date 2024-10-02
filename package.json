@@ -2,7 +2,7 @@
   "name": "binance-market-data-websocket",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://swagath26.github.io/binance-market-data-websocket",
+  "homepage": "https://swagath26.github.io/binance-market-data",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
